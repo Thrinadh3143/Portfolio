@@ -1,12 +1,12 @@
-name: "website-project__day02"
-title: "Thrinadh's Potrfolio"
+name: "STA 631 Portfolio"
+title: "Hotel Booking cancelation Prediction Model"
 description: |
   Thrinadh's Potrfolio
 output_dir: "docs"
 navbar:
   right:
     - text: "Home"
-      href: index.html
+      href: Portfolio.html
     - text: "About"
       href: about.html
 output: distill::distill_article

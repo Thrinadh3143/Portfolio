@@ -88,29 +88,26 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 
   <!--radix_placeholder_meta_tags-->
-  <title>Thrinadh's Potrfolio: About this site</title>
+  <title>House Booking cancelation Prediction Model: STA 631 Statistical Modelling About Project and Dataset overview</title>
 
-  <meta property="description" itemprop="description" content="Some additional details about the website"/>
 
 
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-  <meta property="og:title" content="Thrinadh&#39;s Potrfolio: About this site"/>
+  <meta property="og:title" content="House Booking cancelation Prediction Model: STA 631 Statistical Modelling About Project and Dataset overview"/>
   <meta property="og:type" content="article"/>
-  <meta property="og:description" content="Some additional details about the website"/>
   <meta property="og:locale" content="en_US"/>
-  <meta property="og:site_name" content="Thrinadh&#39;s Potrfolio"/>
+  <meta property="og:site_name" content="House Booking cancelation Prediction Model"/>
 
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary"/>
-  <meta property="twitter:title" content="Thrinadh&#39;s Potrfolio: About this site"/>
-  <meta property="twitter:description" content="Some additional details about the website"/>
+  <meta property="twitter:title" content="House Booking cancelation Prediction Model: STA 631 Statistical Modelling About Project and Dataset overview"/>
 
   <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description"]}},"value":[{"type":"character","attributes":{},"value":["About this site"]},{"type":"character","attributes":{},"value":["Some additional details about the website"]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","site"]}},"value":[{"type":"character","attributes":{},"value":["STA 631 Statistical Modelling About Project and Dataset overview"]},{"type":"character","attributes":{},"value":["distill::distill_website"]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   <!--radix_placeholder_navigation_in_header-->
@@ -2119,7 +2116,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"About this site","description":"Some additional details about the website","authors":[]}
+{"title":"STA 631 Statistical Modelling About Project and Dataset overview","authors":[]}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2127,10 +2124,10 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <header class="header header--fixed" role="banner">
 <nav class="distill-site-nav distill-site-header">
 <div class="nav-left">
-<a href="index.html" class="title">Thrinadh's Potrfolio</a>
+<a href="index.html" class="title">House Booking cancelation Prediction Model</a>
 </div>
 <div class="nav-right">
-<a href="index.html">Home</a>
+<a href="Portfolio.html">Home</a>
 <a href="about.html">About</a>
 <a href="javascript:void(0);" class="nav-toggle">&#9776;</a>
 </div>
@@ -2141,15 +2138,54 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--/radix_placeholder_site_before_body-->
 
 <div class="d-title">
-<h1>About this site</h1>
+<h1>STA 631 Statistical Modelling About Project and Dataset overview</h1>
 
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
-<p><p>Some additional details about the website</p></p>
+
 </div>
 
 
 <div class="d-article">
+<h3 id="description-about-the-project">Description about the Project</h3>
+<p>Hotel booking cancellation prediction is a crucial task for hotel management to optimize their operations, revenue, and customer satisfaction. By accurately predicting which bookings are likely to be canceled, hotels can take proactive measures to minimize the impact, such as overbooking rooms, offering incentives to retain customers, or adjusting pricing strategies.</p>
+<p>The dataset provides valuable insights into various factors that may influence booking cancellations, such as lead time, arrival date, booking channel, customer demographics, and special requests. By analyzing this data and building predictive models, we aim to identify patterns and relationships that can help predict whether a booking is likely to be canceled.</p>
+<h3 id="overview-of-the-dataset">Overview of the Dataset</h3>
+<p>Dataset has nearly 119390 observations and 32 columns</p>
+<ol type="1">
+<li>hotel: Type of hotel (Resort Hotel or City Hotel).</li>
+<li>is_canceled: Binary variable indicating whether the booking was canceled (1) or not (0).</li>
+<li>lead_time: Number of days between booking and arrival.</li>
+<li>arrival_date_year: Year of arrival.</li>
+<li>arrival_date_month: Month of arrival.</li>
+<li>arrival_date_week_number: Week number of arrival.</li>
+<li>arrival_date_day_of_month: Day of the month of arrival.</li>
+<li>stays_in_weekend_nights: Number of weekend nights (Saturday or Sunday) the guest stayed.</li>
+<li>stays_in_week_nights: Number of weekday nights (Monday to Friday) the guest stayed.</li>
+<li>adults: Number of adults.</li>
+<li>children: Number of children.</li>
+<li>babies: Number of babies.</li>
+<li>meal: Type of meal booked (e.g., Bed &amp; Breakfast, Half Board, Full Board).</li>
+<li>country: Country of origin of the guest.</li>
+<li>market_segment: Market segment designation (e.g., Online TA, Offline TA/TO, Direct).</li>
+<li>distribution_channel: Booking distribution channel (e.g., Online Travel Agents, Direct).</li>
+<li>is_repeated_guest: Binary variable indicating whether the guest is a repeated guest (1) or not (0).</li>
+<li>previous_cancellations: Number of previous bookings canceled by the guest.</li>
+<li>previous_bookings_not_canceled: Number of previous bookings not canceled by the guest.</li>
+<li>reserved_room_type: Type of room reserved.</li>
+<li>assigned_room_type: Type of room assigned.</li>
+<li>booking_changes: Number of changes made to the booking.</li>
+<li>deposit_type: Type of deposit made for the booking (e.g., No Deposit, Non-Refundable).</li>
+<li>agent: ID of the travel agency that made the booking.</li>
+<li>company: ID of the company/entity that made the booking.</li>
+<li>days_in_waiting_list: Number of days the booking was on the waiting list before it was confirmed.</li>
+<li>customer_type: Type of customer (e.g., Transient, Contract, Group).</li>
+<li>adr: Average Daily Rate (average revenue per room).</li>
+<li>required_car_parking_spaces: Number of parking spaces required by the guest.</li>
+<li>total_of_special_requests: Number of special requests made by the guest.</li>
+<li>reservation_status: Reservation last status (e.g., Check-Out, Canceled).</li>
+<li>reservation_status_date: Date at which the last status was set.</li>
+</ol>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
