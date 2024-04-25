@@ -9,6 +9,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ### Loading the libraries 
+
 ```{r}
 # load the libraries
 library(tidyverse)
@@ -17,6 +18,7 @@ library(corrplot)
 library(caret)
 library(Metrics)
 library(rsq)
+library(pROC)
 ```
 
 ### Load the Dataset
@@ -31,7 +33,9 @@ hotel_data <- read_csv("hotel_bookings.csv")
 glimpse(hotel_data)
 
 ```
+
 #### Removing missing values columns from the dataset 
+
 ```{r}
 null_counts <- colSums(is.na(hotel_data))
 null_counts
@@ -61,6 +65,7 @@ Ans) The data is taken from 2015, 2016, 2017 approximately more than 1 lakh colu
 
 
 #### 2) What is the total number of bookings canceled and the total number of bookings not canceled? 
+
 ```{r}
 # group by the  booking canceleation status 
 grp_by_canceled_hotel <- hotel_clean_data %>%
@@ -89,7 +94,9 @@ percentage_canceled <- (sum(canceled_bookings) / total_bookings) * 100
 cat("The percentage of bookings that are canceled overall is:", percentage_canceled, "%\n")
 
 ```
+
 #### 4) Distribution of Canceled and Not Canceled Bookings
+
 ```{r}
 
 # Calculate the total number of bookings
@@ -159,7 +166,9 @@ grp_by_year <- hotel_clean_data %>%
 
 grp_by_year
 ```
+
 #### 9) Total Number of Bookings by Cancellation Status over Years
+
 ```{r}
 # Filter for canceled and not canceled bookings separately
 canceled_bookings <- grp_by_year %>% filter(is_canceled == 1)
@@ -182,6 +191,7 @@ ggplot() +
 From the above graph we can see that from 2015 to 2016 cancelations and not cancelations are increased and from 2016 to 2017 cancelation and not cancelations are decreased.
 
 #### 10) What percentage of bookings canceled in each month ?
+
 ```{r}
 # Group data by 'arrival_date_month' and 'is_canceled', then calculate the total number of bookings
 total_bookings <- hotel_clean_data %>%
@@ -203,7 +213,9 @@ merged_data$percentage_canceled <- (merged_data$canceled_total / merged_data$tot
 # Print the resulting dataframe
 print(merged_data)
 ```
+
 #### 11) Percentage of Bookings Canceled over Month 
+
 ```{r}
 
 # Convert 'arrival_date_month' to factor with correct order
@@ -238,6 +250,7 @@ grp_by_roomtype
 ```
 
 #### 13) Number of Bookings by Reserved Room Type and Cancellation Status
+
 ```{r}
 ggplot(grp_by_roomtype, aes(x = reserved_room_type, y = count, fill = factor(is_canceled))) +
   geom_bar(stat = "identity", position = "dodge") +
@@ -250,7 +263,9 @@ ggplot(grp_by_roomtype, aes(x = reserved_room_type, y = count, fill = factor(is_
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
 ```
+
 #### Dropping Unwanted columns
+
 ```{r}
 df <- hotel_clean_data %>%
   select(
@@ -272,6 +287,7 @@ df <- hotel_clean_data %>%
 ```
 
 ### Correlation Matrix
+
 ```{r}
 # Filter numeric columns
 df_numeric <- df[, sapply(df, is.numeric)]
@@ -285,6 +301,7 @@ print(correlation_matrix)
 ```
 
 ### HeatMap 
+
 ```{r}
 # Plot heatmap
 corrplot(correlation_matrix, method = "color", type = "upper", 
@@ -295,12 +312,10 @@ corrplot(correlation_matrix, method = "color", type = "upper",
 
 
 
-### Logistic Regression Model 
+### Splitting the Dataset As Test Dataset  and Train Dataset
 
 ```{r}
 
-# Convert 'is_canceled' to a factor
-df$is_canceled <- as.factor(df$is_canceled)
 
 # Set seed for reproducibility
 set.seed(100)
@@ -318,6 +333,41 @@ df_validation <- df[test_index,]
 dim(df_train)
 ```
 
+### Multiple linear Regression Model 
+
+```{r}
+# Train multiple-linear regression model
+mlr_model <- lm(is_canceled ~ ., data = df_train)
+
+# Print summary of the model
+summary(mlr_model)
+
+```
+```{r}
+# Make predictions on the validation dataset
+mlr_pred <- predict(mlr_model, newdata = df_validation, type = "response")
+
+# Convert predicted probabilities to binary predictions
+mlr_pred <- ifelse(mlr_pred > 0.5, 1, 0)
+
+table(df_validation$is_canceled==mlr_pred)
+
+# Print accuracy
+accuracy <- sum(mlr_pred == df_validation$is_canceled) / nrow(df_validation)
+print(paste("Accuracy:\n", accuracy))
+
+conf_matrix <- confusionMatrix(factor(mlr_pred), factor(df_validation$is_canceled))
+
+# Print confusion matrix
+print(conf_matrix)
+
+
+```
+
+##### Performance Accuracy of the Multi Linear Regression Model is 76 %
+
+### Logistic Regression Model
+
 ```{r}
 
 # Train logistic regression model
@@ -326,6 +376,8 @@ lr_model <- glm(is_canceled ~ ., data = df_train, family = binomial)
 summary (lr_model)
 
 ```
+
+
 
 ```{r}
 # Make predictions on the validation dataset
@@ -340,8 +392,108 @@ table(df_validation$is_canceled==lr_pred)
 accuracy <- sum(lr_pred == df_validation$is_canceled) / nrow(df_validation)
 print(paste("Accuracy:\n", accuracy))
 
+conf_matrix <- confusionMatrix(factor(lr_pred), factor(df_validation$is_canceled))
+
+# Print confusion matrix
+print(conf_matrix)
+
+
 ```
 
-Performance Accuracy of the Logistic Model is 78 %
+##### Performance Accuracy of the Logistic Model is 78 %
+
+
+```{r}
+# Calculate confusion matrix values
+TN <- conf_matrix$table[1, 1]  # True negatives
+FP <- conf_matrix$table[1, 2]  # False positives
+FN <- conf_matrix$table[2, 1]  # False negatives
+TP <- conf_matrix$table[2, 2]  # True positives
+
+# Calculate precision
+precision <- TP / (TP + FP)
+
+# Calculate recall
+recall <- TP / (TP + FN)
+
+# Calculate F1 score
+f1_score <- 2 * (precision * recall) / (precision + recall)
+
+# Print F1 score
+print(paste("F1 Score:\n", f1_score))
+
+```
+
+
+### RoC Curve
+
+```{r}
+
+
+
+# Create ROC curve object
+lr_roc <- roc(df_validation$is_canceled, lr_pred)
+
+# Plot ROC curve
+plot(lr_roc, print.auc = TRUE, print.auc.y = 0.4, col = "blue")
+
+# Add legend
+legend("bottom", legend = c("Logistic Regression"), col = c("blue"), lwd = 2, horiz = TRUE)
+
+```
+An AUC (Area Under the Curve) value of 0.723 indicates the performance of the logistic regression model in distinguishing between the positive class hotel booking cancellations)and the negative class no cancellations based on the predicted probabilities
+
+in summary an AUC of 0.723 indicates that the logistic regression model shows moderate discriminative power in predicting hotel booking cancellations. While the model performs better, there may be opportunities to enhance its predictive ability further
+
+### Course Objectives 
+
+•	Describe probability as a foundation of statistical modeling, including inference and maximum likelihood estimation
+
+•	Determine and apply the appropriate generalized linear model for a specific data context
+
+•	Conduct model selection for a set of candidate models
+
+•	Communicate the results of statistical models to a general audience
+
+•	Use programming software (i.e., R) to fit and assess statistical models
+
+
+
+#### 1.	Describe probability as a foundation of statistical modeling, including inference and maximum likelihood estimation:
+
+Probability theory serves as a fundamental idea in statistical modeling for both logistic regression and multiple linear regression. In logistic regression, the logistic function is used to explicitly model probabilities, especially for binary outcomes. Probabilities play an indirect role in multiple linear regression (MLR) by helping to estimate coefficients and make predictions based on linear connections between variables.
+
+#### 2.	Determine and apply the appropriate generalized linear model for a specific data context:
+
+Logistic regression is best suited for binary classification tasks like predicting hotel booking cancellations. It's a type of generalized linear model (GLM) designed for binary outcomes.
+
+#### 3.	Conduct model selection for a set of candidate models:
+
+Model selection involves comparing the performance of different models. In this context, I have  
+compared the performance of the MLR and logistic regression models using evaluation metrics such as accuracy, precision, recall, F1-score, The model with the highest performance metrics is selected as the best model for predicting hotel booking cancellations.
+	
+
+#### 4.	Communicate the results of statistical models to a general audience:
+
+Our analysis says that there are many factors are involved booking cancelation, like lead time, previous cancelation, and waiting list etc.
+
+•	Interpretation of Coefficients:
+MLR: Each coefficient represents the change in the dependent variable (is_canceled) associated with a one-unit change in the predictor variable, holding all other variables constant. For example, a one-unit increase in lead_time is associated with a 0.0006431 increase in the log-odds of cancellation.
+	
+Logistic Regression: Coefficients represent the log-odds of the dependent variable (is_canceled) being 1 (cancellation) compared to 0 (no cancellation). For instance, a one-unit increase in lead_time is associated with a 0.0038772 increase in the log-odds of cancellation.
+	
+•	Model Performance:
+Accuracy: The logistic regression model (78.49%) outperforms the MLR model (76.26%) in terms of overall accuracy.
+F1 Score: The F1 score, a measure of a model's accuracy, considers both the precision and recall of the model. The logistic regression model has an F1 score of 0.624, indicating better balance between precision and recall compared to the MLR model.
+	
+•	Significance of Predictors:
+Both models indicate significant predictors for hotel booking cancellations, such as lead_time, previous_cancellations, deposit_type, and customer_typeTransient. However, the logistic regression model provides odds ratios, which can be directly interpreted as the change in odds of cancellation associated with a one-unit change in the predictor.
+
+#### 5.	Use programming software (i.e., R) to fit and assess statistical models:
+
+Both logistic regression and MLR models are implemented using programming software such as R. i have used R to fit these models to your data, assess model assumptions, evaluate model performance, and interpret results. Through hands-on experience with R, i have gained proficiency in using programming software to analyze and assess statistical both models.
+
+
+
 
 

@@ -2161,7 +2161,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/taiyun/corrplot'>corrplot</a></span><span class='op'>)</span></span>
 <span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/topepo/caret/'>caret</a></span><span class='op'>)</span></span>
 <span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/mfrasco/Metrics'>Metrics</a></span><span class='op'>)</span></span>
-<span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'>rsq</span><span class='op'>)</span></span></code></pre>
+<span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'>rsq</span><span class='op'>)</span></span>
+<span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://xrobin.github.io/pROC/'>pROC</a></span><span class='op'>)</span></span></code></pre>
 </div>
 </div>
 <h3 id="load-the-dataset">Load the Dataset</h3>
@@ -3219,13 +3220,10 @@ total_of_special_requests       0.17223837               1.000000000</code></pre
 </div>
 <p><img src="Portfolio_files/figure-html5/unnamed-chunk-21-1.png" width="624" /></p>
 </div>
-<h3 id="logistic-regression-model">Logistic Regression Model</h3>
+<h3 id="splitting-the-dataset-as-test-dataset-and-train-dataset">Splitting the Dataset As Test Dataset and Train Dataset</h3>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Convert 'is_canceled' to a factor</span></span>
-<span><span class='va'>df</span><span class='op'>$</span><span class='va'>is_canceled</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>as.factor</a></span><span class='op'>(</span><span class='va'>df</span><span class='op'>$</span><span class='va'>is_canceled</span><span class='op'>)</span></span>
-<span></span>
-<span><span class='co'># Set seed for reproducibility</span></span>
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Set seed for reproducibility</span></span>
 <span><span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>100</span><span class='op'>)</span></span>
 <span></span>
 <span><span class='co'># Create data partition</span></span>
@@ -3242,48 +3240,54 @@ total_of_special_requests       0.17223837               1.000000000</code></pre
 </div>
 <pre><code>[1] 83570    18</code></pre>
 </div>
+<h3 id="multiple-linear-regression-model">Multiple linear Regression Model</h3>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Train logistic regression model</span></span>
-<span><span class='va'>lr_model</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/glm.html'>glm</a></span><span class='op'>(</span><span class='va'>is_canceled</span> <span class='op'>~</span> <span class='va'>.</span>, data <span class='op'>=</span> <span class='va'>df_train</span>, family <span class='op'>=</span> <span class='va'>binomial</span><span class='op'>)</span></span>
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Train multiple-linear regression model</span></span>
+<span><span class='va'>mlr_model</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/lm.html'>lm</a></span><span class='op'>(</span><span class='va'>is_canceled</span> <span class='op'>~</span> <span class='va'>.</span>, data <span class='op'>=</span> <span class='va'>df_train</span><span class='op'>)</span></span>
 <span></span>
-<span><span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span> <span class='op'>(</span><span class='va'>lr_model</span><span class='op'>)</span></span></code></pre>
+<span><span class='co'># Print summary of the model</span></span>
+<span><span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>mlr_model</span><span class='op'>)</span></span></code></pre>
 </div>
 <pre><code>
 Call:
-glm(formula = is_canceled ~ ., family = binomial, data = df_train)
+lm(formula = is_canceled ~ ., data = df_train)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-0.9535 -0.2956 -0.1679  0.2459  1.6449 
 
 Coefficients:
-                                 Estimate Std. Error z value Pr(&gt;|z|)
-(Intercept)                    -2.7555690  0.0777299 -35.451  &lt; 2e-16
-hotelResort Hotel              -0.2546631  0.0209558 -12.152  &lt; 2e-16
-lead_time                       0.0039482  0.0001033  38.237  &lt; 2e-16
-arrival_date_week_number       -0.0033807  0.0006896  -4.903 9.46e-07
-arrival_date_day_of_month      -0.0006913  0.0010019  -0.690 0.490197
-stays_in_weekend_nights         0.0451305  0.0101439   4.449 8.63e-06
-stays_in_week_nights            0.0524144  0.0053624   9.775  &lt; 2e-16
-adults                          0.1068541  0.0177941   6.005 1.91e-09
-is_repeated_guest              -0.8582682  0.0936624  -9.163  &lt; 2e-16
-previous_cancellations          2.8795361  0.0714289  40.313  &lt; 2e-16
-previous_bookings_not_canceled -0.5893401  0.0309331 -19.052  &lt; 2e-16
-reserved_room_typeB             0.3036715  0.0861324   3.526 0.000422
-reserved_room_typeC             0.1440588  0.0913044   1.578 0.114615
-reserved_room_typeD            -0.0310623  0.0243225  -1.277 0.201566
-reserved_room_typeE            -0.1183839  0.0396229  -2.988 0.002810
-reserved_room_typeF            -0.3155814  0.0563701  -5.598 2.16e-08
-reserved_room_typeG            -0.0982406  0.0643659  -1.526 0.126940
-reserved_room_typeH            -0.1246636  0.1125049  -1.108 0.267830
-reserved_room_typeL            -0.6670703  1.1794835  -0.566 0.571692
-reserved_room_typeP            12.6535818 46.6935884   0.271 0.786397
-booking_changes                -0.4397299  0.0179025 -24.562  &lt; 2e-16
-deposit_typeNon Refund          5.0811863  0.1351512  37.596  &lt; 2e-16
-deposit_typeRefundable          0.1684486  0.2337678   0.721 0.471167
-days_in_waiting_list           -0.0014241  0.0005589  -2.548 0.010826
-customer_typeGroup             -0.0999674  0.2160062  -0.463 0.643509
-customer_typeTransient          1.2820538  0.0634543  20.204  &lt; 2e-16
-customer_typeTransient-Party    0.4245544  0.0661749   6.416 1.40e-10
-adr                             0.0055939  0.0002156  25.945  &lt; 2e-16
-total_of_special_requests      -0.5317028  0.0124191 -42.813  &lt; 2e-16
+                                 Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept)                     7.645e-02  1.052e-02   7.266 3.73e-13
+hotelResort Hotel              -5.738e-02  3.357e-03 -17.092  &lt; 2e-16
+lead_time                       6.431e-04  1.547e-05  41.570  &lt; 2e-16
+arrival_date_week_number       -4.276e-04  1.050e-04  -4.071 4.68e-05
+arrival_date_day_of_month       1.706e-04  1.599e-04   1.067    0.286
+stays_in_weekend_nights         1.103e-02  1.639e-03   6.731 1.70e-11
+stays_in_week_nights            9.688e-03  8.875e-04  10.915  &lt; 2e-16
+adults                          2.589e-02  2.619e-03   9.883  &lt; 2e-16
+is_repeated_guest              -4.419e-02  9.018e-03  -4.900 9.59e-07
+previous_cancellations          3.071e-02  1.751e-03  17.545  &lt; 2e-16
+previous_bookings_not_canceled -7.375e-03  1.060e-03  -6.958 3.49e-12
+reserved_room_typeB             7.285e-02  1.443e-02   5.049 4.44e-07
+reserved_room_typeC             2.371e-02  1.603e-02   1.479    0.139
+reserved_room_typeD            -4.789e-03  4.173e-03  -1.148    0.251
+reserved_room_typeE            -7.419e-03  6.590e-03  -1.126    0.260
+reserved_room_typeF            -3.973e-02  9.525e-03  -4.171 3.04e-05
+reserved_room_typeG             1.268e-02  1.124e-02   1.128    0.259
+reserved_room_typeH             8.122e-03  2.056e-02   0.395    0.693
+reserved_room_typeL             1.954e-01  2.020e-01   0.967    0.334
+reserved_room_typeP             8.447e-01  1.279e-01   6.603 4.05e-11
+booking_changes                -6.054e-02  2.166e-03 -27.950  &lt; 2e-16
+deposit_typeNon Refund          5.314e-01  5.199e-03 102.222  &lt; 2e-16
+deposit_typeRefundable         -4.375e-03  3.721e-02  -0.118    0.906
+days_in_waiting_list           -4.803e-04  8.036e-05  -5.977 2.28e-09
+customer_typeGroup             -3.271e-02  2.166e-02  -1.510    0.131
+customer_typeTransient          1.170e-01  7.941e-03  14.732  &lt; 2e-16
+customer_typeTransient-Party   -3.752e-03  8.437e-03  -0.445    0.657
+adr                             8.862e-04  3.486e-05  25.419  &lt; 2e-16
+total_of_special_requests      -9.447e-02  1.901e-03 -49.694  &lt; 2e-16
                                   
 (Intercept)                    ***
 hotelResort Hotel              ***
@@ -3299,7 +3303,141 @@ previous_bookings_not_canceled ***
 reserved_room_typeB            ***
 reserved_room_typeC               
 reserved_room_typeD               
-reserved_room_typeE            ** 
+reserved_room_typeE               
+reserved_room_typeF            ***
+reserved_room_typeG               
+reserved_room_typeH               
+reserved_room_typeL               
+reserved_room_typeP            ***
+booking_changes                ***
+deposit_typeNon Refund         ***
+deposit_typeRefundable            
+days_in_waiting_list           ***
+customer_typeGroup                
+customer_typeTransient         ***
+customer_typeTransient-Party      
+adr                            ***
+total_of_special_requests      ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 0.404 on 83541 degrees of freedom
+Multiple R-squared:  0.3002,    Adjusted R-squared:  0.2999 
+F-statistic:  1280 on 28 and 83541 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Make predictions on the validation dataset</span></span>
+<span><span class='va'>mlr_pred</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>mlr_model</span>, newdata <span class='op'>=</span> <span class='va'>df_validation</span>, type <span class='op'>=</span> <span class='st'>"response"</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='co'># Convert predicted probabilities to binary predictions</span></span>
+<span><span class='va'>mlr_pred</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/ifelse.html'>ifelse</a></span><span class='op'>(</span><span class='va'>mlr_pred</span> <span class='op'>&gt;</span> <span class='fl'>0.5</span>, <span class='fl'>1</span>, <span class='fl'>0</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='fu'><a href='https://rdrr.io/r/base/table.html'>table</a></span><span class='op'>(</span><span class='va'>df_validation</span><span class='op'>$</span><span class='va'>is_canceled</span><span class='op'>==</span><span class='va'>mlr_pred</span><span class='op'>)</span></span></code></pre>
+</div>
+<pre><code>
+FALSE  TRUE 
+ 8504 27312 </code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Print accuracy</span></span>
+<span><span class='va'>accuracy</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>mlr_pred</span> <span class='op'>==</span> <span class='va'>df_validation</span><span class='op'>$</span><span class='va'>is_canceled</span><span class='op'>)</span> <span class='op'>/</span> <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>df_validation</span><span class='op'>)</span></span>
+<span><span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span><span class='st'>"Accuracy:\n"</span>, <span class='va'>accuracy</span><span class='op'>)</span><span class='op'>)</span></span></code></pre>
+</div>
+<pre><code>[1] &quot;Accuracy:\n 0.762564217109672&quot;</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>conf_matrix</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/caret/man/confusionMatrix.html'>confusionMatrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/factor.html'>factor</a></span><span class='op'>(</span><span class='va'>mlr_pred</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>factor</a></span><span class='op'>(</span><span class='va'>df_validation</span><span class='op'>$</span><span class='va'>is_canceled</span><span class='op'>)</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='co'># Print confusion matrix</span></span>
+<span><span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>conf_matrix</span><span class='op'>)</span></span></code></pre>
+</div>
+<pre><code>Confusion Matrix and Statistics
+
+          Reference
+Prediction     0     1
+         0 22163  8139
+         1   365  5149
+                                         
+               Accuracy : 0.7626         
+                 95% CI : (0.7581, 0.767)
+    No Information Rate : 0.629          
+    P-Value [Acc &gt; NIR] : &lt; 2.2e-16      
+                                         
+                  Kappa : 0.4219         
+                                         
+ Mcnemar&#39;s Test P-Value : &lt; 2.2e-16      
+                                         
+            Sensitivity : 0.9838         
+            Specificity : 0.3875         
+         Pos Pred Value : 0.7314         
+         Neg Pred Value : 0.9338         
+             Prevalence : 0.6290         
+         Detection Rate : 0.6188         
+   Detection Prevalence : 0.8460         
+      Balanced Accuracy : 0.6856         
+                                         
+       &#39;Positive&#39; Class : 0              
+                                         </code></pre>
+</div>
+<h5 id="performance-accuracy-of-the-multi-linear-regression-model-is-76">Performance Accuracy of the Multi Linear Regression Model is 76 %</h5>
+<h3 id="logistic-regression-model">Logistic Regression Model</h3>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Train logistic regression model</span></span>
+<span><span class='va'>lr_model</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/glm.html'>glm</a></span><span class='op'>(</span><span class='va'>is_canceled</span> <span class='op'>~</span> <span class='va'>.</span>, data <span class='op'>=</span> <span class='va'>df_train</span>, family <span class='op'>=</span> <span class='va'>binomial</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span> <span class='op'>(</span><span class='va'>lr_model</span><span class='op'>)</span></span></code></pre>
+</div>
+<pre><code>
+Call:
+glm(formula = is_canceled ~ ., family = binomial, data = df_train)
+
+Coefficients:
+                                 Estimate Std. Error z value Pr(&gt;|z|)
+(Intercept)                    -2.6310170  0.0763644 -34.453  &lt; 2e-16
+hotelResort Hotel              -0.2600819  0.0209868 -12.393  &lt; 2e-16
+lead_time                       0.0038772  0.0001029  37.666  &lt; 2e-16
+arrival_date_week_number       -0.0041559  0.0006905  -6.018 1.76e-09
+arrival_date_day_of_month       0.0014516  0.0010016   1.449 0.147268
+stays_in_weekend_nights         0.0507168  0.0101685   4.988 6.11e-07
+stays_in_week_nights            0.0509593  0.0053835   9.466  &lt; 2e-16
+adults                          0.1149539  0.0180224   6.378 1.79e-10
+is_repeated_guest              -0.9466905  0.0969554  -9.764  &lt; 2e-16
+previous_cancellations          2.8939964  0.0726050  39.859  &lt; 2e-16
+previous_bookings_not_canceled -0.6012623  0.0312582 -19.235  &lt; 2e-16
+reserved_room_typeB             0.3646115  0.0837890   4.352 1.35e-05
+reserved_room_typeC             0.0534257  0.0915354   0.584 0.559448
+reserved_room_typeD            -0.0435090  0.0243985  -1.783 0.074543
+reserved_room_typeE            -0.0850604  0.0393959  -2.159 0.030841
+reserved_room_typeF            -0.2966329  0.0555866  -5.336 9.48e-08
+reserved_room_typeG            -0.0843475  0.0640682  -1.317 0.187997
+reserved_room_typeH            -0.1295262  0.1142191  -1.134 0.256788
+reserved_room_typeL             0.4373055  1.0171359   0.430 0.667241
+reserved_room_typeP            13.4334706 60.8030988   0.221 0.825144
+booking_changes                -0.4416206  0.0179386 -24.619  &lt; 2e-16
+deposit_typeNon Refund          5.1321419  0.1388559  36.960  &lt; 2e-16
+deposit_typeRefundable          0.1396175  0.2311887   0.604 0.545902
+days_in_waiting_list           -0.0021067  0.0005790  -3.639 0.000274
+customer_typeGroup             -0.0288302  0.1951769  -0.148 0.882569
+customer_typeTransient          1.1419830  0.0615333  18.559  &lt; 2e-16
+customer_typeTransient-Party    0.2903888  0.0644085   4.509 6.53e-06
+adr                             0.0056017  0.0002159  25.950  &lt; 2e-16
+total_of_special_requests      -0.5520063  0.0124839 -44.217  &lt; 2e-16
+                                  
+(Intercept)                    ***
+hotelResort Hotel              ***
+lead_time                      ***
+arrival_date_week_number       ***
+arrival_date_day_of_month         
+stays_in_weekend_nights        ***
+stays_in_week_nights           ***
+adults                         ***
+is_repeated_guest              ***
+previous_cancellations         ***
+previous_bookings_not_canceled ***
+reserved_room_typeB            ***
+reserved_room_typeC               
+reserved_room_typeD            .  
+reserved_room_typeE            *  
 reserved_room_typeF            ***
 reserved_room_typeG               
 reserved_room_typeH               
@@ -3308,7 +3446,7 @@ reserved_room_typeP
 booking_changes                ***
 deposit_typeNon Refund         ***
 deposit_typeRefundable            
-days_in_waiting_list           *  
+days_in_waiting_list           ***
 customer_typeGroup                
 customer_typeTransient         ***
 customer_typeTransient-Party   ***
@@ -3319,11 +3457,11 @@ Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&
 
 (Dispersion parameter for binomial family taken to be 1)
 
-    Null deviance: 110173  on 83569  degrees of freedom
-Residual deviance:  78181  on 83541  degrees of freedom
-AIC: 78239
+    Null deviance: 110150  on 83569  degrees of freedom
+Residual deviance:  78074  on 83541  degrees of freedom
+AIC: 78132
 
-Number of Fisher Scoring iterations: 9</code></pre>
+Number of Fisher Scoring iterations: 10</code></pre>
 </div>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -3337,16 +3475,112 @@ Number of Fisher Scoring iterations: 9</code></pre>
 </div>
 <pre><code>
 FALSE  TRUE 
- 7699 28117 </code></pre>
+ 7703 28113 </code></pre>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Print accuracy</span></span>
 <span><span class='va'>accuracy</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>lr_pred</span> <span class='op'>==</span> <span class='va'>df_validation</span><span class='op'>$</span><span class='va'>is_canceled</span><span class='op'>)</span> <span class='op'>/</span> <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>df_validation</span><span class='op'>)</span></span>
 <span><span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span><span class='st'>"Accuracy:\n"</span>, <span class='va'>accuracy</span><span class='op'>)</span><span class='op'>)</span></span></code></pre>
 </div>
-<pre><code>[1] &quot;Accuracy:\n 0.785040205494751&quot;</code></pre>
+<pre><code>[1] &quot;Accuracy:\n 0.784928523564887&quot;</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>conf_matrix</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/caret/man/confusionMatrix.html'>confusionMatrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/factor.html'>factor</a></span><span class='op'>(</span><span class='va'>lr_pred</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>factor</a></span><span class='op'>(</span><span class='va'>df_validation</span><span class='op'>$</span><span class='va'>is_canceled</span><span class='op'>)</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='co'># Print confusion matrix</span></span>
+<span><span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>conf_matrix</span><span class='op'>)</span></span></code></pre>
 </div>
-<p>Performance Accuracy of the Logistic Model is 78 %</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<pre><code>Confusion Matrix and Statistics
+
+          Reference
+Prediction     0     1
+         0 21715  6890
+         1   813  6398
+                                          
+               Accuracy : 0.7849          
+                 95% CI : (0.7806, 0.7892)
+    No Information Rate : 0.629           
+    P-Value [Acc &gt; NIR] : &lt; 2.2e-16       
+                                          
+                  Kappa : 0.4915          
+                                          
+ Mcnemar&#39;s Test P-Value : &lt; 2.2e-16       
+                                          
+            Sensitivity : 0.9639          
+            Specificity : 0.4815          
+         Pos Pred Value : 0.7591          
+         Neg Pred Value : 0.8873          
+             Prevalence : 0.6290          
+         Detection Rate : 0.6063          
+   Detection Prevalence : 0.7987          
+      Balanced Accuracy : 0.7227          
+                                          
+       &#39;Positive&#39; Class : 0               
+                                          </code></pre>
+</div>
+<h5 id="performance-accuracy-of-the-logistic-model-is-78">Performance Accuracy of the Logistic Model is 78 %</h5>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Calculate confusion matrix values</span></span>
+<span><span class='va'>TN</span> <span class='op'>&lt;-</span> <span class='va'>conf_matrix</span><span class='op'>$</span><span class='va'>table</span><span class='op'>[</span><span class='fl'>1</span>, <span class='fl'>1</span><span class='op'>]</span>  <span class='co'># True negatives</span></span>
+<span><span class='va'>FP</span> <span class='op'>&lt;-</span> <span class='va'>conf_matrix</span><span class='op'>$</span><span class='va'>table</span><span class='op'>[</span><span class='fl'>1</span>, <span class='fl'>2</span><span class='op'>]</span>  <span class='co'># False positives</span></span>
+<span><span class='va'>FN</span> <span class='op'>&lt;-</span> <span class='va'>conf_matrix</span><span class='op'>$</span><span class='va'>table</span><span class='op'>[</span><span class='fl'>2</span>, <span class='fl'>1</span><span class='op'>]</span>  <span class='co'># False negatives</span></span>
+<span><span class='va'>TP</span> <span class='op'>&lt;-</span> <span class='va'>conf_matrix</span><span class='op'>$</span><span class='va'>table</span><span class='op'>[</span><span class='fl'>2</span>, <span class='fl'>2</span><span class='op'>]</span>  <span class='co'># True positives</span></span>
+<span></span>
+<span><span class='co'># Calculate precision</span></span>
+<span><span class='va'>precision</span> <span class='op'>&lt;-</span> <span class='va'>TP</span> <span class='op'>/</span> <span class='op'>(</span><span class='va'>TP</span> <span class='op'>+</span> <span class='va'>FP</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='co'># Calculate recall</span></span>
+<span><span class='va'>recall</span> <span class='op'>&lt;-</span> <span class='va'>TP</span> <span class='op'>/</span> <span class='op'>(</span><span class='va'>TP</span> <span class='op'>+</span> <span class='va'>FN</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='co'># Calculate F1 score</span></span>
+<span><span class='va'>f1_score</span> <span class='op'>&lt;-</span> <span class='fl'>2</span> <span class='op'>*</span> <span class='op'>(</span><span class='va'>precision</span> <span class='op'>*</span> <span class='va'>recall</span><span class='op'>)</span> <span class='op'>/</span> <span class='op'>(</span><span class='va'>precision</span> <span class='op'>+</span> <span class='va'>recall</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='co'># Print F1 score</span></span>
+<span><span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span><span class='st'>"F1 Score:\n"</span>, <span class='va'>f1_score</span><span class='op'>)</span><span class='op'>)</span></span></code></pre>
+</div>
+<pre><code>[1] &quot;F1 Score:\n 0.624225571979121&quot;</code></pre>
+</div>
+<h3 id="roc-curve">RoC Curve</h3>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Create ROC curve object</span></span>
+<span><span class='va'>lr_roc</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/pROC/man/roc.html'>roc</a></span><span class='op'>(</span><span class='va'>df_validation</span><span class='op'>$</span><span class='va'>is_canceled</span>, <span class='va'>lr_pred</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='co'># Plot ROC curve</span></span>
+<span><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>lr_roc</span>, print.auc <span class='op'>=</span> <span class='cn'>TRUE</span>, print.auc.y <span class='op'>=</span> <span class='fl'>0.4</span>, col <span class='op'>=</span> <span class='st'>"blue"</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='co'># Add legend</span></span>
+<span><span class='fu'><a href='https://rdrr.io/r/graphics/legend.html'>legend</a></span><span class='op'>(</span><span class='st'>"bottom"</span>, legend <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Logistic Regression"</span><span class='op'>)</span>, col <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"blue"</span><span class='op'>)</span>, lwd <span class='op'>=</span> <span class='fl'>2</span>, horiz <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span></code></pre>
+</div>
+<p><img src="Portfolio_files/figure-html5/unnamed-chunk-28-1.png" width="624" /></p>
+</div>
+<p>An AUC (Area Under the Curve) value of 0.723 indicates the performance of the logistic regression model in distinguishing between the positive class hotel booking cancellations)and the negative class no cancellations based on the predicted probabilities</p>
+<p>in summary an AUC of 0.723 indicates that the logistic regression model shows moderate discriminative power in predicting hotel booking cancellations. While the model performs better, there may be opportunities to enhance its predictive ability further</p>
+<h3 id="course-objectives">Course Objectives</h3>
+<p>• Describe probability as a foundation of statistical modeling, including inference and maximum likelihood estimation</p>
+<p>• Determine and apply the appropriate generalized linear model for a specific data context</p>
+<p>• Conduct model selection for a set of candidate models</p>
+<p>• Communicate the results of statistical models to a general audience</p>
+<p>• Use programming software (i.e., R) to fit and assess statistical models</p>
+<h4 id="describe-probability-as-a-foundation-of-statistical-modeling-including-inference-and-maximum-likelihood-estimation">1. Describe probability as a foundation of statistical modeling, including inference and maximum likelihood estimation:</h4>
+<p>Probability theory serves as a fundamental idea in statistical modeling for both logistic regression and multiple linear regression. In logistic regression, the logistic function is used to explicitly model probabilities, especially for binary outcomes. Probabilities play an indirect role in multiple linear regression (MLR) by helping to estimate coefficients and make predictions based on linear connections between variables.</p>
+<h4 id="determine-and-apply-the-appropriate-generalized-linear-model-for-a-specific-data-context">2. Determine and apply the appropriate generalized linear model for a specific data context:</h4>
+<p>Logistic regression is best suited for binary classification tasks like predicting hotel booking cancellations. It’s a type of generalized linear model (GLM) designed for binary outcomes.</p>
+<h4 id="conduct-model-selection-for-a-set-of-candidate-models">3. Conduct model selection for a set of candidate models:</h4>
+<p>Model selection involves comparing the performance of different models. In this context, I have<br />
+compared the performance of the MLR and logistic regression models using evaluation metrics such as accuracy, precision, recall, F1-score, The model with the highest performance metrics is selected as the best model for predicting hotel booking cancellations.</p>
+<h4 id="communicate-the-results-of-statistical-models-to-a-general-audience">4. Communicate the results of statistical models to a general audience:</h4>
+<p>Our analysis says that there are many factors are involved booking cancelation, like lead time, previous cancelation, and waiting list etc.</p>
+<p>• Interpretation of Coefficients:
+MLR: Each coefficient represents the change in the dependent variable (is_canceled) associated with a one-unit change in the predictor variable, holding all other variables constant. For example, a one-unit increase in lead_time is associated with a 0.0006431 increase in the log-odds of cancellation.</p>
+<p>Logistic Regression: Coefficients represent the log-odds of the dependent variable (is_canceled) being 1 (cancellation) compared to 0 (no cancellation). For instance, a one-unit increase in lead_time is associated with a 0.0038772 increase in the log-odds of cancellation.</p>
+<p>• Model Performance:
+Accuracy: The logistic regression model (78.49%) outperforms the MLR model (76.26%) in terms of overall accuracy.
+F1 Score: The F1 score, a measure of a model’s accuracy, considers both the precision and recall of the model. The logistic regression model has an F1 score of 0.624, indicating better balance between precision and recall compared to the MLR model.</p>
+<p>• Significance of Predictors:
+Both models indicate significant predictors for hotel booking cancellations, such as lead_time, previous_cancellations, deposit_type, and customer_typeTransient. However, the logistic regression model provides odds ratios, which can be directly interpreted as the change in odds of cancellation associated with a one-unit change in the predictor.</p>
+<h4 id="use-programming-software-i.e.-r-to-fit-and-assess-statistical-models">5. Use programming software (i.e., R) to fit and assess statistical models:</h4>
+<p>Both logistic regression and MLR models are implemented using programming software such as R. i have used R to fit these models to your data, assess model assumptions, evaluate model performance, and interpret results. Through hands-on experience with R, i have gained proficiency in using programming software to analyze and assess statistical both models.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
